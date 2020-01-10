@@ -16,12 +16,14 @@ type
     Label1: TLabel;
     ProgressBar1: TProgressBar;
     Button3: TButton;
+    Button4: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -198,6 +200,22 @@ begin
   for i := 1 to max do
     if IsPrime(i) then
        Inc(total);
+  ShowMessage(' оличество найденных простых чисел: ' + IntToStr(total));
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+const
+  max = 50000;
+var
+  i, total: integer;
+begin
+  total := 0;
+  TParallel.For(1, max, procedure(i: integer)
+     begin
+        if IsPrime(i) then
+           TInterlocked.Increment(total);
+     end
+  );
   ShowMessage(' оличество найденных простых чисел: ' + IntToStr(total));
 end;
 
