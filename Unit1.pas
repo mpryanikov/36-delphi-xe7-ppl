@@ -15,11 +15,15 @@ type
     btnCancel: TButton;
     Label1: TLabel;
     ProgressBar1: TProgressBar;
+    Button3: TButton;
+    Button4: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -33,6 +37,24 @@ var
 implementation
 
 {$R *.dfm}
+
+function IsPrime (n: Integer): boolean;
+var
+   test: integer;
+begin
+   //Считаем, что число по умолчанию простое.
+   IsPrime := true;
+   //Пробуем делить число на другие числа.
+   for test := 2 to n - 1 do
+      if (n mod test) = 0 then
+      begin
+         //Если число делится на другое число (кроме 1 или n) без остатка,
+         //то число не является простым.
+         IsPrime := false;
+         //Выходим из цикла.
+         break;
+      end;
+end;
 
 procedure TForm1.btnCancelClick(Sender: TObject);
 begin
@@ -166,6 +188,44 @@ begin
    TTask.WaitForAny(tasks);
    //Результат будет 3000.
    ShowMessage('Все задания выполнены. Результат: ' + IntToStr(value));
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+const
+  max = 50000;
+var
+  i, total: integer;
+begin
+  total := 0;
+  for i := 1 to max do
+    if IsPrime(i) then
+       Inc(total);
+  ShowMessage('Количество найденных простых чисел: ' + IntToStr(total));
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+const
+  max = 50000;
+var
+  i, total: integer;
+begin
+  total := 0;
+  TParallel.For(1, max, procedure(i: integer; loopState: TParallel.TLoopState)
+     begin
+        if IsPrime(i) then
+        begin
+           System.TMonitor.Enter(self);
+           try
+              Inc(total);
+              if total > 1000 then
+                 loopState.Break;
+           finally
+              System.TMonitor.Exit(self);
+           end;
+        end;
+     end
+  );
+  ShowMessage('Количество найденных простых чисел: ' + IntToStr(total));;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
