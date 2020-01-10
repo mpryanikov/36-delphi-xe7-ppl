@@ -18,6 +18,7 @@ type
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
+    Button6: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
@@ -26,6 +27,7 @@ type
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -244,6 +246,26 @@ begin
   //Запускаем задачу.
   future.Start;
   //Узнать результат получится только после завершения задачи: через 3 секунды.
+  ShowMessage('Результат: ' + IntToStr(future.Value));
+end;
+
+procedure TForm1.Button6Click(Sender: TObject);
+var
+  future: IFuture<integer>;
+begin
+  //Создаём задачу.
+  future := TTask.Future<integer>(function: integer
+     begin
+        Sleep(3000);
+        Result := 20;
+     end
+  );
+  //Запускаем задачу.
+  future.Start;
+  //Выполняем какие-то другие задачи.
+  Sleep(5000);
+  //Узнать результат здесь мы можем сразу,
+  //т.к. задача в этой точке отработала 2 секунды назад.
   ShowMessage('Результат: ' + IntToStr(future.Value));
 end;
 
