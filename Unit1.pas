@@ -210,13 +210,22 @@ var
   i, total: integer;
 begin
   total := 0;
-  TParallel.For(1, max, procedure(i: integer)
+  TParallel.For(1, max, procedure(i: integer; loopState: TParallel.TLoopState)
      begin
         if IsPrime(i) then
-           TInterlocked.Increment(total);
+        begin
+           System.TMonitor.Enter(self);
+           try
+              Inc(total);
+              if total > 1000 then
+                 loopState.Break;
+           finally
+              System.TMonitor.Exit(self);
+           end;
+        end;
      end
   );
-  ShowMessage(' оличество найденных простых чисел: ' + IntToStr(total));
+  ShowMessage(' оличество найденных простых чисел: ' + IntToStr(total));;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
