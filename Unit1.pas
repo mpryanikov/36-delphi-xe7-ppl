@@ -19,6 +19,7 @@ type
     Button4: TButton;
     Button5: TButton;
     Button6: TButton;
+    Button7: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
@@ -28,6 +29,7 @@ type
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -267,6 +269,18 @@ begin
   //Узнать результат здесь мы можем сразу,
   //т.к. задача в этой точке отработала 2 секунды назад.
   ShowMessage('Результат: ' + IntToStr(future.Value));
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+begin
+  //Считываем размеры пула.
+  ShowMessage('Максимальный размер пула: '
+    + IntToStr(TThreadPool.Default.MaxWorkerThreads));
+  ShowMessage('Минимальный размер пула: '
+    + IntToStr(TThreadPool.Default.MinWorkerThreads));
+  //Устанавливаем размеры пула.
+  TThreadPool.Default.SetMaxWorkerThreads(10);
+  TThreadPool.Default.SetMinWorkerThreads(2);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
