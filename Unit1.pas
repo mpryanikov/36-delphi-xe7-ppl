@@ -4,16 +4,25 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Threading, System.SyncObjs;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Threading, System.SyncObjs,
+  Vcl.ComCtrls;
 
 type
   TForm1 = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    btnStart: TButton;
+    btnCancel: TButton;
+    Label1: TLabel;
+    ProgressBar1: TProgressBar;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure btnStartClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
+    task: ITask;
   public
     { Public declarations }
   end;
@@ -24,6 +33,74 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TForm1.btnCancelClick(Sender: TObject);
+begin
+  //Отменяем выполнение задания.
+  if Assigned(task) then
+    task.Cancel;
+end;
+
+procedure TForm1.btnStartClick(Sender: TObject);
+begin
+  //Если задание уже есть и оно выполняется, останавливаем его.
+  if Assigned(task) and (task.Status = TTaskStatus.Running) then
+    task.Cancel;
+  //Создаём новое задание.
+  task := TTask.Create(procedure()
+    var
+       task: ITask;
+       stopwatch, curPos, maxPos: integer;
+    begin
+       //Сохраняем ссылку на интерфейс ITask в локальной переменной.
+       task := self.task;
+       //Обнуляем секундомер.
+       stopwatch := 0;
+       //Работать с контролами формы нужно из главного потока,
+       //поэтому используем метод TThread.Synchronize для синхронного взаимодействия
+       //или TThread.Queue - для асинхронного.
+       TThread.Synchronize(nil,
+          procedure()
+          begin
+             //Сохраняем максимальное значение прогресс бара в локальной переменной.
+             maxPos := Progressbar1.Max;
+             //Сбрасываем текущее положение прогресс бара в Progressbar1.Min.
+             curPos := Progressbar1.Min;
+             Progressbar1.Position := Progressbar1.Min;
+             //Сбрасываем показания секундомера.
+             Label1.Caption := '0';
+          end
+       );
+       //Выполняем цикл, пока не дойдём до Progressbar1.Max.
+       while curPos < maxPos do
+       begin
+          //Увеличиваем количество секунд в секундомере.
+          //Переменная stopwatch локальная, поэтому TInterlocked.Add не используем.
+          Inc(stopwatch, 2);
+          //Увеличиваем прогресс.
+          //Переменная curPos локальная, поэтому TInterlocked.Add не используем.
+          Inc(curPos);
+          TThread.Synchronize(nil,
+             procedure()
+             begin
+                //Показываем количество пройденных секунд.
+                Label1.Caption := stopwatch.ToString;
+                //Показываем прогресс.
+                Progressbar1.Position := curPos;
+             end
+          );
+          //Спим 2 секунды.
+          Sleep(2000);
+          //Проверяем, не отменили ли задание.
+          if task.Status = TTaskStatus.Canceled then
+             //Если отменили, выходим из цикла.
+             break;
+       end;
+    end
+  );
+  //Стартуем созданное задание.
+  task.Start;
+end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
@@ -89,6 +166,13 @@ begin
    TTask.WaitForAny(tasks);
    //Результат будет 3000.
    ShowMessage('Все задания выполнены. Результат: ' + IntToStr(value));
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  //Если форма закрылась, то отменяем выполнение задания, если задание есть и оно выполняется.
+  if Assigned(task) and (task.Status = TTaskStatus.Running) then
+    task.Cancel;
 end;
 
 end.
