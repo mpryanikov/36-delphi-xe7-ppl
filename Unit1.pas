@@ -34,6 +34,24 @@ implementation
 
 {$R *.dfm}
 
+function IsPrime (n: Integer): boolean;
+var
+   test: integer;
+begin
+   //Считаем, что число по умолчанию простое.
+   IsPrime := true;
+   //Пробуем делить число на другие числа.
+   for test := 2 to n - 1 do
+      if (n mod test) = 0 then
+      begin
+         //Если число делится на другое число (кроме 1 или n) без остатка,
+         //то число не является простым.
+         IsPrime := false;
+         //Выходим из цикла.
+         break;
+      end;
+end;
+
 procedure TForm1.btnCancelClick(Sender: TObject);
 begin
   //Отменяем выполнение задания.
