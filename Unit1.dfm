@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 660
   Top = 415
   Caption = 'Form1'
-  ClientHeight = 299
-  ClientWidth = 202
+  ClientHeight = 214
+  ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,7 +17,7 @@ object Form1: TForm1
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 173
+    Top = 53
     Width = 31
     Height = 13
     Caption = 'Label1'
@@ -42,7 +42,7 @@ object Form1: TForm1
   end
   object btnStart: TButton
     Left = 8
-    Top = 224
+    Top = 104
     Width = 75
     Height = 25
     Caption = 'Start'
@@ -51,7 +51,7 @@ object Form1: TForm1
   end
   object btnCancel: TButton
     Left = 89
-    Top = 224
+    Top = 104
     Width = 75
     Height = 25
     Caption = 'Cancel'
@@ -60,9 +60,18 @@ object Form1: TForm1
   end
   object ProgressBar1: TProgressBar
     Left = 8
-    Top = 192
+    Top = 72
     Width = 156
     Height = 17
     TabOrder = 4
+  end
+  object Button3: TButton
+    Left = 8
+    Top = 168
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 5
+    OnClick = Button3Click
   end
 end

@@ -15,11 +15,13 @@ type
     btnCancel: TButton;
     Label1: TLabel;
     ProgressBar1: TProgressBar;
+    Button3: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -184,6 +186,19 @@ begin
    TTask.WaitForAny(tasks);
    //Результат будет 3000.
    ShowMessage('Все задания выполнены. Результат: ' + IntToStr(value));
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+const
+  max = 50000;
+var
+  i, total: integer;
+begin
+  total := 0;
+  for i := 1 to max do
+    if IsPrime(i) then
+       Inc(total);
+  ShowMessage('Количество найденных простых чисел: ' + IntToStr(total));
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
