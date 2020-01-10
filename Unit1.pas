@@ -17,6 +17,7 @@ type
     ProgressBar1: TProgressBar;
     Button3: TButton;
     Button4: TButton;
+    Button5: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartClick(Sender: TObject);
@@ -24,6 +25,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
   private
     { Private declarations }
     task: ITask;
@@ -226,6 +228,23 @@ begin
      end
   );
   ShowMessage('Количество найденных простых чисел: ' + IntToStr(total));;
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+var
+  future: IFuture<integer>;
+begin
+  //Создаём задачу.
+  future := TTask.Future<integer>(function: integer
+     begin
+        Sleep(3000);
+        Result := 10;
+     end
+  );
+  //Запускаем задачу.
+  future.Start;
+  //Узнать результат получится только после завершения задачи: через 3 секунды.
+  ShowMessage('Результат: ' + IntToStr(future.Value));
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
